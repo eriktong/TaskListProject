@@ -1,0 +1,65 @@
+name: Deploy to GitHub Pages
+on:
+  push:
+    branches: [ $default-branch ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Detect Node project
+        id: detect
+        run: |
+          if [ -f package.json ]; then echo "node=true" >> $GITHUB_OUTPUT; else echo "node=false" >> $GITHUB_OUTPUT; fi
+
+      - name: Setup Node
+        if: steps.detect.outputs.node == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install & Build (if Node)
+        if: steps.detect.outputs.node == 'true'
+        run: |
+          npm ci || npm install
+          npm run build || true
+
+      - name: Pick build dir
+        id: pick
+        run: |
+          if [ -d build ]; then echo "dir=build" >> $GITHUB_OUTPUT
+          elif [ -d dist ]; then echo "dir=dist" >> $GITHUB_OUTPUT
+          elif [ -d build ]; then echo "dir=build" >> $GITHUB_OUTPUT
+          else echo "dir=." >> $GITHUB_OUTPUT; fi
+
+      - name: SPA fallback (404.html)
+        run: |
+          DIR="${{ steps.pick.outputs.dir }}"
+          if [ -f "$DIR/index.html" ]; then cp "$DIR/index.html" "$DIR/404.html" || true; fi
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ steps.pick.outputs.dir }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
