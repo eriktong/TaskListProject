@@ -1,70 +1,106 @@
-# Getting Started with Create React App
+# TaskListProject
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+![Pages Deploy](https://github.com/eriktong/TaskListProject/actions/workflows/pages.yml/badge.svg) ![Last commit](https://img.shields.io/github/last-commit/eriktong/TaskListProject) ![License](https://img.shields.io/badge/license-MIT-informational)
 
-## Available Scripts
+**Live Demo:** [https://eriktong.github.io/TaskListProject/](https://eriktong.github.io/TaskListProject/)
 
-In the project directory, you can run:
+> Short description: _Update this one-liner to summarize the app in a sentence._
 
-### `npm start`
+---
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Features
+- Clean starter with React (Create React App)
+- Deployed on **GitHub Pages** via Actions
+- Production build output: `build`
+- Mobile-friendly layout _(if applicable)_
+- Routing-ready _(SPA)_  
+- This is a single-page app. GitHub Pages uses 404.html as SPA fallback (already handled in workflow).
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+## Quick Start
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Prerequisites
+- Node.js LTS (or none if pure static)
+- npm (bundled with Node)
 
-### `npm run build`
+### Local Dev
+```bash
+# install
+npm install
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+# start dev server
+npm start
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Build
+```bash
+npm run build
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+> Build output goes to **`build`**.
 
-### `npm run eject`
+---
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Deploy (GitHub Pages)
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+This repo deploys using **Actions** on pushes to `master`.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- Workflow: `.github/workflows/pages.yml`  
+- Public URL: **https://eriktong.github.io/TaskListProject/**  
+- SPA fallback: `404.html` is created during the workflow so React Router routes work on refresh.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+If something breaks:
+1. Verify the latest workflow run is green.
+2. For CRA, ensure `"homepage": "https://eriktong.github.io/TaskListProject/"` exists in `package.json`.
+3. For Vite, ensure `base: "/TaskListProject/"` in `vite.config.*`.
 
-## Learn More
+---
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Screenshots
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+> Put images under `docs/` and reference them here.
 
-### Code Splitting
+| Screen | Image |
+|---|---|
+| Home | ![Home](docs/screenshot-1.png) |
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+---
 
-### Analyzing the Bundle Size
+## Tech Stack
+- React (Create React App)
+- HTML, CSS, JavaScript
+- GitHub Actions + GitHub Pages
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+---
 
-### Making a Progressive Web App
+## Project Structure (high level)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
 
-### Advanced Configuration
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## Environment Variables
+> If none, delete this section. Otherwise, document them like:
 
-### Deployment
+| Variable | Example | Required | Description |
+|---|---|---|---|
+| `VITE_API_URL` | `https://api.example.com` | No | API base URL |
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+---
 
-### `npm run build` fails to minify
+## Roadmap / TODO
+- [ ] Add better screenshots
+- [ ] Fill in real description & features
+- [ ] Audit Lighthouse (performance, a11y, SEO)
+- [ ] Add tests (Vitest/Jest) _(optional)_
+- [ ] Add CI for lint/test _(optional)_
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+---
+
+## License
+This project is licensed under the **MIT License**. See [LICENSE](LICENSE).
+
+---
+
+## Maintainer
+- **Erik Tong** — feedback & issues via GitHub

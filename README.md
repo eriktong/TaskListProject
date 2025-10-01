@@ -4,32 +4,29 @@
 
 **Live Demo:** [https://eriktong.github.io/TaskListProject/](https://eriktong.github.io/TaskListProject/)
 
-> Short description: _Update this one-liner to summarize the app in a sentence._
+> Task/Todo app with filtering & persistence.
 
 ---
 
 ## Features
-- Clean starter with React (Create React App)
+- Add/complete/delete tasks
+- Filters (all/active/done)
+- LocalStorage persistence
 - Deployed on **GitHub Pages** via Actions
-- Production build output: `build`
-- Mobile-friendly layout _(if applicable)_
-- Routing-ready _(SPA)_  
-- This is a single-page app. GitHub Pages uses 404.html as SPA fallback (already handled in workflow).
+- Output dir: `build`
+- SPA fallback handled via `404.html`.
 
 ---
 
 ## Quick Start
 
 ### Prerequisites
-- Node.js LTS (or none if pure static)
+- Node.js LTS (if using Node/React)
 - npm (bundled with Node)
 
 ### Local Dev
 ```bash
-# install
 npm install
-
-# start dev server
 npm start
 ```
 
@@ -38,31 +35,22 @@ npm start
 npm run build
 ```
 
-> Build output goes to **`build`**.
-
 ---
 
 ## Deploy (GitHub Pages)
+- Public URL: **https://eriktong.github.io/TaskListProject/**
+- Workflow: `.github/workflows/pages.yml`
+- Ensure `"homepage": "https://eriktong.github.io/TaskListProject/"` is set in `package.json`.
 
-This repo deploys using **Actions** on pushes to `master`.
-
-- Workflow: `.github/workflows/pages.yml`  
-- Public URL: **https://eriktong.github.io/TaskListProject/**  
-- SPA fallback: `404.html` is created during the workflow so React Router routes work on refresh.
-
-If something breaks:
-1. Verify the latest workflow run is green.
-2. For CRA, ensure `"homepage": "https://eriktong.github.io/TaskListProject/"` exists in `package.json`.
-3. For Vite, ensure `base: "/TaskListProject/"` in `vite.config.*`.
+If a route 404s on refresh, SPA fallback is already created as `404.html`.
 
 ---
 
 ## Screenshots
-
-> Put images under `docs/` and reference them here.
+Put images under `docs/` and reference them here.
 
 | Screen | Image |
-|---|---|
+| --- | --- |
 | Home | ![Home](docs/screenshot-1.png) |
 
 ---
@@ -74,33 +62,14 @@ If something breaks:
 
 ---
 
-## Project Structure (high level)
-
-
----
-
-## Environment Variables
-> If none, delete this section. Otherwise, document them like:
-
-| Variable | Example | Required | Description |
-|---|---|---|---|
-| `VITE_API_URL` | `https://api.example.com` | No | API base URL |
-
----
-
-## Roadmap / TODO
-- [ ] Add better screenshots
-- [ ] Fill in real description & features
-- [ ] Audit Lighthouse (performance, a11y, SEO)
-- [ ] Add tests (Vitest/Jest) _(optional)_
-- [ ] Add CI for lint/test _(optional)_
+## Project Health Checklist
+- [ ] Update screenshots in `docs/`
+- [ ] Fill in any missing features in this README
+- [ ] Lighthouse pass (perf, a11y, SEO)
+- [ ] Add tests (optional)
 
 ---
 
 ## License
-This project is licensed under the **MIT License**. See [LICENSE](LICENSE).
+If a license exists in this repo, it applies. Otherwise, add one (MIT recommended).
 
----
-
-## Maintainer
-- **Erik Tong** — feedback & issues via GitHub
