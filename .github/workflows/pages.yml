@@ -20,34 +20,27 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Detect Node project
-        id: detect
+        id: node
         run: |
           if [ -f package.json ]; then echo "node=true" >> $GITHUB_OUTPUT; else echo "node=false" >> $GITHUB_OUTPUT; fi
 
       - name: Setup Node
-        if: steps.detect.outputs.node == 'true'
+        if: steps.node.outputs.node == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
 
       - name: Install deps
-        if: steps.detect.outputs.node == 'true'
-        run: npm ci || npm install
+        if: steps.node.outputs.node == 'true'
+        run: npm ci
 
-      - name: Build (CRA/Vite/generic)
-        if: steps.detect.outputs.node == 'true'
-        run: |
-          if npx --yes -- vitest --version >/dev/null 2>&1; then echo "skip tests"; fi
-          if npx --yes -- vite --version >/dev/null 2>&1; then
-            npx --yes vite build --base="/${{ github.event.repository.name }}/" || npm run build -- --base="/${{ github.event.repository.name }}/"
-          else
-            npm run build || true
-          fi
+      - name: Build
+        if: steps.node.outputs.node == 'true'
+        run: npm run build --if-present || true
 
       - name: Pick output dir
-        id: out
-        shell: bash
+        id: pick
         run: |
           for d in dist build docs public . ; do
             if [ -d "$d" ]; then echo "dir=$d" >> $GITHUB_OUTPUT; exit 0; fi
@@ -55,20 +48,19 @@ jobs:
 
       - name: SPA fallback (404.html)
         run: |
-          DIR="${{ steps.out.outputs.dir }}"
+          DIR="${{ steps.pick.outputs.dir }}"
           if [ -f "$DIR/index.html" ]; then cp "$DIR/index.html" "$DIR/404.html" || true; fi
 
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
         with:
-          path: ${{ steps.out.outputs.dir }}
+          enablement: true
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ steps.pick.outputs.dir }}
+
+      - name: Deploy
+        id: deployment
         uses: actions/deploy-pages@v4
