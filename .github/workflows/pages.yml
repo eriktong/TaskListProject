@@ -59,6 +59,8 @@ jobs:
           if [ -f "$DIR/index.html" ]; then cp "$DIR/index.html" "$DIR/404.html" || true; fi
 
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ${{ steps.out.outputs.dir }}
