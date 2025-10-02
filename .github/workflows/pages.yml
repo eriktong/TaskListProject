@@ -1,90 +1,79 @@
+# -- paste the SAME YAML from Option A here --
 name: Deploy to GitHub Pages
 on:
   push:
     branches: [ main, master ]
   workflow_dispatch:
-
 permissions:
   contents: read
   pages: write
   id-token: write
-
 concurrency:
-  group: pages-${{ github.ref_name }}
+  group: ${{ github.repository }}-pages
   cancel-in-progress: true
-
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Detect project
+      - name: Detect project type
         id: detect
+        shell: bash
         run: |
-          if [ -f package.json ]; then echo "node=true" >> $GITHUB_OUTPUT; else echo "node=false" >> $GITHUB_OUTPUT; fi
           if [ -f package.json ]; then
-            if jq -e '.dependencies.vite or .devDependencies.vite' package.json >/dev/null; then echo "builder=vite" >> $GITHUB_OUTPUT; fi
-            if jq -e '.dependencies["react-scripts"] or .devDependencies["react-scripts"]' package.json >/dev/null; then echo "builder=cra" >> $GITHUB_OUTPUT; fi
+            echo "node=true" >> $GITHUB_OUTPUT
+            if grep -q '"vite"' package.json; then
+              echo "builder=vite" >> $GITHUB_OUTPUT
+            elif grep -q '"react-scripts"' package.json; then
+              echo "builder=cra" >> $GITHUB_OUTPUT
+            else
+              echo "builder=other-node" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "node=false" >> $GITHUB_OUTPUT
           fi
-          for d in dist build docs public . ; do
-            if [ -d "$d" ]; then echo "dir=$d" >> $GITHUB_OUTPUT; break; fi
+          for d in dist build docs public .; do
+            if [ -f "$d/index.html" ]; then echo "pre_dir=$d" >> $GITHUB_OUTPUT; break; fi
           done
-
-      - if: steps.detect.outputs.node == 'true'
-        name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
+        if: steps.detect.outputs.node == 'true'
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
-
-      - if: steps.detect.outputs.node == 'true'
-        name: Install deps
-        run: npm ci
-
-      - if: steps.detect.outputs.builder == 'vite'
-        name: Build (Vite)
-        run: npm run build -- --base="/${{ github.event.repository.name }}/"
-
-      - if: steps.detect.outputs.builder == 'cra'
-        name: Build (CRA)
+      - name: Install deps
+        if: steps.detect.outputs.node == 'true'
         run: |
-          PUBLIC_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/" \
-          npm run build
-
-      - name: Compute output dir
+          if [ -f package-lock.json ] || [ -f npm-shrinkwrap.json ]; then
+            npm ci
+          else
+            npm install --no-audit --prefer-offline
+          fi
+      - name: Build (Vite)
+        if: steps.detect.outputs.builder == 'vite'
+        run: npx vite build --base="/${{ github.event.repository.name }}/"
+      - name: Build (CRA)
+        if: steps.detect.outputs.builder == 'cra'
+        run: PUBLIC_URL="/${{ github.event.repository.name }}" npm run build
+      - name: Build (Other Node)
+        if: steps.detect.outputs.builder == 'other-node'
+        run: npm run build || true
+      - name: Choose output dir
         id: out
         run: |
-          if [ -d dist ]; then echo "out=dist" >> $GITHUB_OUTPUT; \
-          elif [ -d build ]; then echo "out=build" >> $GITHUB_OUTPUT; \
-          elif [ -d docs ]; then echo "out=docs" >> $GITHUB_OUTPUT; \
-          elif [ -d public ]; then echo "out=public" >> $GITHUB_OUTPUT; \
-          else echo "out=." >> $GITHUB_OUTPUT; fi
-
-      - name: SPA fallback (404.html)
-        run: |
-          OUT="${{ steps.out.outputs.out }}"
-          if [ -f "$OUT/index.html" ]; then cp "$OUT/index.html" "$OUT/404.html" || true; fi
-
-      - name: Configure Pages (enable if needed)
-        uses: actions/configure-pages@v5
+          if [ -d dist ] && [ -f dist/index.html ]; then DIR="dist";
+          elif [ -d build ] && [ -f build/index.html ]; then DIR="build";
+          elif [ -d docs ] && [ -f docs/index.html ]; then DIR="docs";
+          elif [ -d public ] && [ -f public/index.html ]; then DIR="public";
+          elif [ -f index.html ]; then DIR=".";
+          elif [ -n "${{ steps.detect.outputs.pre_dir }}" ] && [ -f "${{ steps.detect.outputs.pre_dir }}/index.html" ]; then DIR="${{ steps.detect.outputs.pre_dir }}";
+          else DIR=".";
+          fi
+          echo "dir=$DIR" >> $GITHUB_OUTPUT
+          cp "$DIR/index.html" "$DIR/404.html" 2>/dev/null || true
+      - uses: actions/configure-pages@v5
         with:
           enablement: true
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v3
         with:
-          path: ${{ steps.out.outputs.out }}
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+          path: ${{ steps.out.outputs.dir }}
+      - uses: actions/deploy-pages@v4
