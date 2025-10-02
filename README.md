@@ -1,8 +1,9 @@
 # TaskListProject
 
+**Live Demo:** https://eriktong.github.io/TaskListProject/
+
 ![Pages Deploy](https://github.com/eriktong/TaskListProject/actions/workflows/pages.yml/badge.svg) ![Last commit](https://img.shields.io/github/last-commit/eriktong/TaskListProject) ![License](https://img.shields.io/badge/license-MIT-informational)
 
-**Live Demo:** [https://eriktong.github.io/TaskListProject/](https://eriktong.github.io/TaskListProject/)
 
 > Task/Todo app with filtering & persistence.
 
